@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- MODIFICA ESTA LÍNEA PARA FORZAR LA OCULTACIÓN DEL SCROLLBAR -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- AGREGAR ESTA LÍNEA PARA HTTPS EN MÓVIL -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Invitación de Graduación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="invi.css">
+    
+    <!-- AGREGA ESTE ESTILO INLINE COMO SEGURIDAD -->
+<style>
+        /* Fuerza la ocultación del scrollbar */
+        body {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+            overflow-x: hidden !important;
+        }
+        body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        
+        /* IMAGEN DE FONDO CORREGIDA - URL CONSISTENTE */
+        .cover.with-background {
+            background: linear-gradient(rgba(13, 92, 77, 0.4), rgba(10, 74, 61, 0.5)), 
+                        url('https://mjtomy.github.io/GraduacionDT/fondo-graduacion.jpg') center/cover no-repeat fixed !important;
+            background-color: #0d5c4d !important;
+            min-height: 100vh !important;
+            position: relative;
+        }
+        
+        /* Respaldo absoluto para móvil */
+        @media (max-width: 768px) {
+            .cover.with-background {
+                background: linear-gradient(rgba(13, 92, 77, 0.5), rgba(10, 74, 61, 0.6)), 
+                            url('https://mjtomy.github.io/GraduacionDT/fondo-graduacion.jpg') center/cover no-repeat fixed !important;
+                background-attachment: scroll !important;
+            }
+            
+            /* Respaldo extra si falla la imagen */
+            .cover.with-background::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('https://mjtomy.github.io/GraduacionDT/fondo-graduacion.jpg') center/cover no-repeat;
+                z-index: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+     <!-- AGREGAR PRELOAD DE IMAGEN PARA MÓVIL -->
+     <img src="https://mjtomy.github.io/GraduacionDT/fondo-graduacion.jpg" style="display: none;" alt="preload" id="preloadImage">
+     
+     <!-- DEBUG IMAGE -->
+    <div style="display: none;">
+        <img src="https://mjtomy.github.io/GraduacionDT/fondo-graduacion.jpg" id="debugImage" onload="console.log('✅ Imagen URL absoluta cargada')" onerror="console.log('❌ Error imagen URL absoluta')">
+    </div>
+     
+     <iframe 
+      id="backgroundMusic" 
+      width="100%" 
+      height="80" 
+      scrolling="no" 
+      frameborder="no" 
+      allow="autoplay" 
+      style="display:none;"
+      src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/deccarecords/richard-clayderman-romantique&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
+  </iframe>
+  <script src="https://w.soundcloud.com/player/api.js"></script>
+
+    
+    
+    <!-- Botón de pausa -->
+<button class="music-btn" id="musicBtn">
+    <i class="fas fa-play" id="playIcon"></i>
+    <i class="fas fa-pause" id="pauseIcon" style="display: none;"></i>
+</button>
+    
+    <!-- Modal de confirmación de asistencia -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2 class="gold-text">Confirmar Asistencia</h2>
+            <p class="white-text">Por favor, completa tus datos para confirmar tu asistencia</p>
+            <form class="confirmation-form" id="confirmationForm">
+                <input type="text" id="nombre" class="form-input" placeholder="Nombre completo" required>
+                <textarea id="comentarios" class="form-input" placeholder="Alegrias o comentarios adicionales" rows="3"></textarea>
+                <button type="submit" class="form-submit">Confirmar Asistencia</button>
+            </form>
+        </div>
+    </div>  
+    
+    <!-- Modal de Tips y Notas -->
+    <div class="modal" id="tipsModal">
+        <div class="modal-content modal-tips">
+            <span class="close-btn" id="closeTips">&times;</span>
+            <div class="tips-modal-header">
+                <h2>Tips y Notas</h2>
+                <p>Información adicional para tener en cuenta</p>
+            </div>
+            <ul class="tips-list white-text">
+                <li>¡Por favor ser puntuales!</li>
+                <li>Tus hijos tu responsabilidad</li>
+                <li>¡Confirmar asistencia a la brevedad, antes del 20 de Octubre!</li>
+                <li>Llevar abrigo para disfrutar de los espacios exteriores.</li>
+                <li>Olvidarse de todo y a disfrutar!!!</li>
+            </ul>
+        </div>
+    </div>
+    
+<!-- Modal de cámara ACTUALIZADO -->
+<div class="modal" id="cameraModal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeCamera">&times;</span>
+        <h2 class="gold-text">Tomar Foto</h2>
+        <div id="cameraView">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <img id="capturedImage" alt="Foto capturada">
+        </div>
+        <div class="camera-controls">
+            <button class="camera-btn" id="startCamera">
+                <i class="fas fa-camera"></i> Activar Cámara
+            </button>
+            <button class="camera-btn" id="switchCamera" style="display: none;">
+                <i class="fas fa-camera-rotate"></i> Selfie
+            </button>
+            <button class="camera-btn" id="captureBtn" disabled>
+                <i class="fas fa-camera-retro"></i> Capturar
+            </button>
+            <button class="camera-btn" id="retakeBtn" style="display: none;">
+                <i class="fas fa-redo"></i> Volver a Tomar
+            </button>
+            <button class="camera-btn" id="savePhotoBtn" style="display: none;">
+                <i class="fas fa-save"></i> Enviar Foto
+            </button>
+        </div>
+    </div>
+</div>
+    <!-- Sección 1: Portada CON IMAGEN -->
+    <section class="cover with-background" id="section1">
+        <div class="names gold-text">DAVID TOMAS</div>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 2: Fecha de la boda -->
+    <section class="date-section" id="section2">
+        <h1 class="gold-text">ME GRADÚO!</h1>
+        <h2 class="white-text">Dia</h2>
+        <h2 class="white-text">Y</h2>
+        <h2 class="white-text">Fecha</h2>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 3: Calendario -->
+    <section class="calendar-section" id="section3">
+        <h2 class="gold-text">Noviembre</h2>
+        <div class="calendar white-text">
+            <div>Lun</div><div>Mar</div><div>Mie</div><div>Jue</div><div>Vie</div><div>Sab</div><div>Dom</div>
+            <div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div class="calendar-day highlight">8</div><div>9</div>
+            <div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div>
+        </div>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <button class="save-btn" id="saveCalendar">Guardar en calendario</button>
+    </section>
+    
+    <!-- Sección 4: Ceremonia -->
+    <section class="ceremony" id="section4">
+        <div class="ceremony-content">
+            <h2 class="gold-text">Viernes 7 de<br>Noviembre</h2>
+            <h1 class="gold-text">MISA</h1>
+            <div class="ceremony-inner">
+                <div class="event-details white-text">
+                    <div>
+                        <h3 class="gold-text">Hora: 8 am</h3>
+                        <p>Lugar: Iglesia San Francisco el Grande</p>
+                        <p>La Antigua Guatemala</p>
+                    </div>
+                    <button class="save-btn" id="locationCeremony">¿Cómo llegar?</button>
+                </div>
+            </div>
+            <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Sección 5: Celebración -->
+    <section class="celebration" id="section5">
+        <h1 class="gold-text">CELEBRACION</h1>
+        <div class="event-details white-text">
+            <div>
+                <h3 class="gold-text">Hora: 4:30 pm</h3>
+                <p>Lugar: Salon de eventos Exclu</p>
+            </div>
+            <button class="save-btn" id="locationCelebration">¿Cómo llegar?</button>
+        </div>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 6: VESTIMENTA -->
+    <section class="dress-code" id="section6">
+        <h1 class="gold-text">Vestimenta</h1>
+        <h2 class="gold-text">Formal</h2>
+        <div class="dress-code-content">
+        <h3 class="gold-text"><span class="emoji"> 🤵</span> Hombres</h3>
+        <p class="white-text"><span class="emoji"> 👔</span> Traje</p>
+        
+        <h3 class="gold-text"><span class="emoji">👗</span> Mujer</h3>
+        <p class="white-text"><span class="emoji">💃</span> Vestido</p>
+        </div>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 7: Detalles -->
+    <section class="details" id="section7">
+        <h1 class="gold-text">Detalles a tener en cuenta</h1>
+        <h2 class="gold-text">Tips y Notas</h2>
+        <p class="white-text">Información adicional para tener en cuenta</p>
+        <button class="save-btn" id="showTips">+ Info</button>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 8: Momentos inolvidables -->
+    <section class="memories" id="section8">
+        <h1 class="gold-text">Momentos</h1>
+        <h2 class="gold-text">Inolvidables</h2>
+        <p class="white-text">Capturando recuerdos que duran para siempre</p>
+        
+        <div class="memories-content">
+            <i class="fas fa-camera camera-icon" id="openCamera"></i>
+            <p class="white-text">Haz clic en la cámara para capturar momentos especiales</p>
+        </div>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>  
+    </section>
+    
+    <!-- Sección 9: Compartir fotos -->
+    <section class="photos" id="section9">
+        <h1 class="gold-text">Comparte tus fotos y vídeos de la Graduación aquí</h1>
+        <p class="white-text">No queremos perdernos ningún momento de este hermoso día</p>
+        <hr style="width: 80%; margin: 2rem auto; border: 0.5px solid #d4af37;">
+        <h3 class="gold-text">Sube tus fotos aquí</h3>
+        <input type="file" id="photoUpload" class="file-input" accept="image/*,video/*" multiple>
+        <label for="photoUpload" class="file-label">Enviar foto por WhatsApp</label>
+        <div class="uploaded-photos" id="uploadedPhotos">
+            <!-- Aquí se mostrarán las fotos subidas -->
+        </div>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 10: Confirmación -->
+    <section class="confirmation" id="section10">
+        <h1 class="gold-text">Confirmación</h1>
+        <p class="white-text">¿Nos acompañas en este día tan especial?</p>
+        <button class="confirmation-btn" id="openConfirmation">Confirmar asistencia</button>
+        <div class="scroll-down-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <!-- Sección 11: Countdown -->
+    <section class="countdown" id="section11">
+        <div class="names gold-text">INVITA</div>
+        <div class="names gold-text">David Elias Tomas</div>  
+        <div class="countdown-container">
+            <div class="countdown-item">
+                <div class="countdown-number" id="days">32</div>
+                <div class="countdown-label white-text">Dias</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="hours">11</div>
+                <div class="countdown-label white-text">Hr</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="minutes">02</div>
+                <div class="countdown-label white-text">Min</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="seconds">14</div>
+                <div class="countdown-label white-text">Seg</div>
+            </div>
+        </div>
+        <h2 class="gold-text">¡Los Esperamos!</h2>
+        <div class="footer">
+            Desarrollado con el ❤️ por Josué Tomas
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    
+    <!-- AGREGA ESTE SCRIPT PARA FORZAR LA OCULTACIÓN DEL SCROLLBAR -->
+    <script>
+        // Fuerza la ocultación del scrollbar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.style.overflow = 'hidden';
+            document.documentElement.style.height = '100%';
+            document.body.style.overflow = 'auto';
+            document.body.style.height = '100%';
+            document.body.style.webkitOverflowScrolling = 'touch';
+            
+            // Previene scroll horizontal
+            window.addEventListener('scroll', function() {
+                if (window.scrollX !== 0) {
+                    window.scrollTo(0, window.scrollY);
+                }
+            });
+            
+            // Verificar carga de imagen en móvil
+            const preloadImage = document.getElementById('preloadImage');
+            preloadImage.onload = function() {
+                console.log('✅ Imagen cargada correctamente en móvil');
+            };
+            preloadImage.onerror = function() {
+                console.log('❌ Error cargando imagen en móvil');
+            };
+            
+            // Fuerza la imagen después de cargar
+            setTimeout(function() {
+                document.querySelector('.cover').style.backgroundImage = 
+                    "linear-gradient(rgba(13, 92, 77, 0.3), rgba(10, 74, 61, 0.3)), url('https://mjtomy.github.io/GraduacionDT/fondo-graduacion.jpg')";
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
