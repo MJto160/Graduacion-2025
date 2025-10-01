@@ -850,12 +850,40 @@ p {
     }
 }
 
-/* Estilo adicional para el botón de cambiar cámara */
-#switchCamera {
-    background: linear-gradient(to bottom, #4a90e2, #357abd);
-    color: white;
+/* Estilos para el botón de cambiar cámara */
+.camera-btn {
+    background: linear-gradient(135deg, #d4af37, #f4d03f);
+    color: #0d5c4d;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
-#switchCamera:hover {
-    background: linear-gradient(to bottom, #5ba0f2, #468acd);
+.camera-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.camera-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.camera-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
 }
